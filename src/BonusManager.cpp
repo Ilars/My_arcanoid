@@ -65,7 +65,7 @@ void BonusManager::MoveAll(std::shared_ptr <Bar> bar, std::shared_ptr <Field> fi
             break;
         }
 
-        if (bonus->getPosition().y >= Game::WINDOW_SIZE.y) {
+        if (bonus->getPosition().y >= Game::GetWindowSize().y) {
             _bonuses.erase(_bonuses.begin() + i);
             break;
         }

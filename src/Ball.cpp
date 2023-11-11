@@ -73,13 +73,22 @@ void Ball::ReflectBar(std::shared_ptr<Bar> bar) {
 	auto ball_pos = getPosition();
 	auto rad = getRadius();
 	auto bar_pos = bar->GetCoord();
+	auto bar_size = bar->GetSize();
 
 	bool y_lower_bars_top = abs(ball_pos.y + 2 * rad - bar_pos.y) < _speed.y;
-	bool x_to_right_from_bar_left = ball_pos.x >= bar_pos.x;
+	bool x_to_right_from_bar_left = ball_pos.x + 2 * rad >= bar_pos.x;
 	bool x_to_left_from_bar_right = ball_pos.x <= bar_pos.x + bar->GetSize().x;
+
+	bool right_upper_angle = fabs(ball_pos.x - (bar_pos.x + bar_size.x)) < 0 &&
+		fabs(ball_pos.y + 2 * rad - bar_pos.y) < 0;
+	bool left_upper_angle = fabs(ball_pos.x + 2 * rad - bar_pos.x) < 0 &&
+		fabs(ball_pos.y + 2 * rad - bar_pos.y) < 0;
 
 	if (y_lower_bars_top && x_to_right_from_bar_left && x_to_left_from_bar_right) {
 		_move_dir.y *= -1;
+		if (left_upper_angle || right_upper_angle) {
+			_move_dir.x *= -1;
+		}
 		if (bar->IsBallStick()) {
 			_stick_to_board = true;
 			setPosition(ball_pos.x, _start_coord.y);
@@ -98,11 +107,10 @@ void Ball::MoveWithBar() {
 		if (x_coord >= 0)
 			move({ -Bar::DEFAULT_BAR_SPEED, 0 });
 	if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
-		if (x_coord + 2 * getRadius() <= Game::WINDOW_SIZE.x)
+		if (x_coord + 2 * getRadius() <= Game::GetWindowSize().x)
 			move({ Bar::DEFAULT_BAR_SPEED, 0 });
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
 		_stick_to_board = false;
-
 
 }
 
@@ -113,12 +121,7 @@ void Ball::Respawn() {
 }
 
 void Ball::SpeedUp(const Vector2f& increment) {
-	if (_speed.x > increment.x && _speed.y > increment.y ||
-		increment.x > 0 && increment.y > 0) {
-		
 		_speed += increment;
-	}
-
 }
 
 bool Ball::ReflectFromBlock(const Block& block) {
@@ -151,19 +154,39 @@ bool Ball::ReflectFromBlock(const Block& block) {
 		fabs(ball_pos.y - (block_pos.y + block_size.y)) < max_dist;
 
 	bool lower_side = fabs(ball_pos.y - (block_pos.y + block_size.y)) < max_dist &&
-		ball_pos.x >= block_pos.x &&
-		ball_pos.x + 2 * radius <= block_pos.x + block_size.x;
+		ball_pos.x + 2*radius > block_pos.x &&
+		ball_pos.x < block_pos.x + block_size.x;
 	bool upper_side = fabs(ball_pos.y + 2 * radius - block_pos.y) < max_dist &&
-		ball_pos.x >= block_pos.x &&
-		ball_pos.x + 2 * radius <= block_pos.x + block_size.x;
+		ball_pos.x + 2 * radius > block_pos.x &&
+		ball_pos.x < block_pos.x + block_size.x;
 	bool left_side = fabs(ball_pos.x + 2 * radius - block_pos.x) < max_dist &&
-		ball_pos.y + 2 * radius >= block_pos.y &&
-		ball_pos.y <= block_pos.y + block_size.y;
+		ball_pos.y + 2 * radius > block_pos.y &&
+		ball_pos.y < block_pos.y + block_size.y;
 	bool right_side = fabs(ball_pos.x - (block_pos.x + block_size.x)) < max_dist &&
-		ball_pos.y + 2 * radius >= block_pos.y &&
-		ball_pos.y <= block_pos.y + block_size.y;
+		ball_pos.y + 2 * radius > block_pos.y &&
+		ball_pos.y < block_pos.y + block_size.y;
 
-	if (right_lower_angle ) {
+	 if (lower_side) {
+		_move_dir.y *= -1;
+		hit = true;
+	}
+
+	else if (upper_side) {
+		_move_dir.y *= -1;
+		hit = true;
+	}
+
+	else if (left_side) {
+		_move_dir.x *= -1;
+		hit = true;
+	}
+
+	else if (right_side) {
+		_move_dir.x *= -1;
+		hit = true;
+	}
+
+	else if (right_lower_angle ) {
 		_move_dir.x *= -1;
 		_move_dir.y *= -1;
 		hit = true;
@@ -187,25 +210,6 @@ bool Ball::ReflectFromBlock(const Block& block) {
 		hit = true;
 	}
 
-	else if (lower_side) {
-		_move_dir.y *= -1;
-		hit = true;
-	}
-
-	else if (upper_side) {
-		_move_dir.y *= -1;
-		hit = true;
-	}
-
-	else if (left_side) {
-		_move_dir.x *= -1;
-		hit = true;
-	}
-
-	else if (right_side) {
-		_move_dir.x *= -1;
-		hit = true;
-	}
 
 	return hit;
 }
@@ -215,9 +219,9 @@ void Ball::ReflectWall() {
 	auto pos = getPosition();
 
 	bool fell_left = pos.x <= _speed.x;
-	bool fell_right = fabs(pos.x + 2 * getRadius() - _speed.x) >= Game::WINDOW_SIZE.x;
+	bool fell_right = fabs(pos.x + 2 * getRadius() - _speed.x) >= Game::GetWindowSize().x;
 	bool fell_Top = pos.y <= _speed.y;
-	bool fell_bot = fabs(pos.y + 2 * getRadius() - Game::WINDOW_SIZE.y) <= _speed.y;
+	bool fell_bot = fabs(pos.y + 2 * getRadius() - Game::GetWindowSize().y) <= _speed.y;
 
 	if (fell_left || fell_right)
 		_move_dir.x *= -1;

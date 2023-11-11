@@ -7,9 +7,6 @@ const Vector2u Game::FIELD_SIZE = { 6U, 4U };
 const unsigned int Game::BALL_FELLOFF_PENALTY = 3U;
 const Vector2u Game::WINDOW_SIZE = { 810U, 600U };
 
-const Vector2f Game::BLOCK_SPEED_INCREMENT = { 1.f, 1.f };
-
-
 void Game::ShowScore() {
     Text text;
 
@@ -23,7 +20,7 @@ void Game::ShowScore() {
 
 
 bool Game::CheckGameOver() {
-    if (!(field->CheckGameEnd())) {
+    if (field->CheckGameEnd()) {
         window->clear();
         ShowScore();
 
@@ -88,8 +85,8 @@ void  Game::SpawnRandomBonus(Block& block) {
     }
 }
 void  Game::BallSpeedUp() {
-    auto acceleration = BLOCK_SPEED_INCREMENT;
-    ball->IncreaseSpeed(acceleration);
+    auto increment = SpeedUpBlock::BLOCK_SPEED_INCREMENT;
+    ball->IncreaseSpeed(increment);
     IncreaseScore();
 }
 
@@ -155,13 +152,13 @@ void Game::InitObjects(){
         (*this, field_top_coord, FIELD_SIZE, (Vector2f)window_size, block_size);
 
 
-    Vector2f bar_size = { 0.25f * window_size.x, 0.05f * window_size.y };
-    Vector2f bar_start_pos = { 1.5f * bar_size.x, 0.9f * window_size.y };
+    Vector2f bar_size = { 0.125f * window_size.x, 0.01f * window_size.y };
+    Vector2f bar_start_pos = { 3.f * bar_size.x, 0.9f * window_size.y };
 
     bar = std::make_shared <Bar>(bar_size, bar_start_pos);
 
 
-    float ball_radius = (block_size.x + block_size.y) / 20.f;
+    float ball_radius = (window_size.x + window_size.y) / 300.f;
     Vector2f ball_start_pos = { bar_start_pos.x + bar_size.x / 2 - ball_radius / 2,
                               bar_start_pos.y - 3 * ball_radius };
     ball = std::make_shared <Ball>(ball_radius, ball_start_pos);

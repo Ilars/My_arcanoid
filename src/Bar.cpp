@@ -21,7 +21,7 @@ void Bar::Move() {
         if (getPosition().x >= 0)
             move({ -_speed, 0 });
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        if (getPosition().x + getSize().x <= Game::WINDOW_SIZE.x)
+        if (getPosition().x + getSize().x <= Game::GetWindowSize().x)
             move({ _speed, 0 });
     if (_ball_stick)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {

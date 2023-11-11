@@ -5,6 +5,8 @@ using namespace sf;
 
 const int Block::MAX_HEALTH = 3;
 const float MovingBlock::DEFAULT_BLOCK_SPEED = 1.f;
+const Vector2f SpeedUpBlock::BLOCK_SPEED_INCREMENT = { .25f, .25f };
+
 
 Block::Block(Game& game, const sf::Vector2f& size, const sf::Vector2f& pos,sf::Color c): 
 	_game(game) {
@@ -41,7 +43,7 @@ void SpeedUpBlock::Hitted() {
 }
 
 void MovingBlock::Move() {
-	if (getPosition().x <= 0 || getPosition().x + getSize().x >= Game::WINDOW_SIZE.x)
+	if (getPosition().x <= 0 || getPosition().x + getSize().x >= Game::GetWindowSize().x)
 		SetDirection(GetDirection() * -1);
 
 	move({ GetDirection() * _speed , 0 });

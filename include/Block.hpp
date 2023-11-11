@@ -29,8 +29,8 @@ protected:
 	bool _is_undestructible = false;
 
 public:
-	Block(Game& game, const sf::Vector2f& size, const sf::Vector2f& pos
-		,sf::Color c = sf::Color::Green);
+	Block(Game& game, const sf::Vector2f& size, const sf::Vector2f& pos,
+		sf::Color c = sf::Color::Green);
 	virtual ~Block() {};
 
 	virtual int ReduceHealth();
@@ -72,6 +72,8 @@ public:
 };
 
 class SpeedUpBlock : public Block{
+public:
+	static const sf::Vector2f BLOCK_SPEED_INCREMENT;
 public:
 	SpeedUpBlock(Game& game, const sf::Vector2f& size, const sf::Vector2f& pos) :
 		Block(game, size, pos) {};

@@ -17,6 +17,7 @@ public:
 	const static int INDESTRCTABLE_BLOCK_SPAWN_CHANCE;
 	const static int SPEEDUP_BLOCK_SPAWN_CHANCE;
 	const static int BONUS_BLOCK_SPAWN_CHANCE;
+	const static int CLASSIC_BLOCK_SPAWN_CHANCE;
 
 public:
 	Field(Game& game, const sf::Vector2f& top, const sf::Vector2u& size,

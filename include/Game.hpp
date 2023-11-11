@@ -10,13 +10,9 @@ private:
     const static unsigned int FRAME_RATE;
     const static sf::Vector2u FIELD_SIZE;
     const static unsigned int BALL_FELLOFF_PENALTY;
-
-private:
-    static const sf::Vector2f BLOCK_SPEED_INCREMENT;
-
-public:
     const static sf::Vector2u WINDOW_SIZE;
-
+public:
+    static  sf::Vector2u GetWindowSize() { return WINDOW_SIZE; };
 private:
     int score;
 

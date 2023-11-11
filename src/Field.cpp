@@ -3,9 +3,10 @@
 #include "Block.hpp"
 #include "Game.hpp"
 
-const int Field::INDESTRCTABLE_BLOCK_SPAWN_CHANCE = 5;
-const int Field::SPEEDUP_BLOCK_SPAWN_CHANCE = 18;
-const int Field::BONUS_BLOCK_SPAWN_CHANCE = 80;
+const int Field::INDESTRCTABLE_BLOCK_SPAWN_CHANCE = 25;
+const int Field::SPEEDUP_BLOCK_SPAWN_CHANCE = 50;
+const int Field::BONUS_BLOCK_SPAWN_CHANCE = 1105;
+const int Field::CLASSIC_BLOCK_SPAWN_CHANCE = 50;
 
 void Field::Draw(std::shared_ptr<sf::RenderWindow> window) {
 	for (auto block : _grid) {
@@ -42,18 +43,23 @@ Field::Field(Game& game, const sf::Vector2f& top,const sf::Vector2u& size,
 	for (int i = 0; i < size.y; i++) {
 		for (int j = 0; j < size.x; j++) {
 			std::shared_ptr<Block> block;
-			int block_type = rand() % 100;
+			int sum_chanse = BONUS_BLOCK_SPAWN_CHANCE + SPEEDUP_BLOCK_SPAWN_CHANCE + INDESTRCTABLE_BLOCK_SPAWN_CHANCE;
+			int block_type = rand() % (sum_chanse + CLASSIC_BLOCK_SPAWN_CHANCE);
+			std::cout << block_type << " ";
 
-			sf::Vector2f pos = { x,y };
-			if (block_type < BONUS_BLOCK_SPAWN_CHANCE) {
+			sf::Vector2f pos = {  x, y };
+			if (0 <= block_type && block_type < BONUS_BLOCK_SPAWN_CHANCE) {
+				//std::cout << "BlockWithBonus" << "\n";
 				block = std::make_shared<BlockWithBonus>
 					(BlockWithBonus(_game, block_size, pos));
 			}
-			else if (block_type < SPEEDUP_BLOCK_SPAWN_CHANCE) {
+			else if (BONUS_BLOCK_SPAWN_CHANCE <= block_type && block_type < BONUS_BLOCK_SPAWN_CHANCE + SPEEDUP_BLOCK_SPAWN_CHANCE) {
+				//std::cout << "SpeedUpBlock" << "\n";
 				block = std::make_shared <SpeedUpBlock>
 					(SpeedUpBlock(_game, block_size, pos));
 			}
-			else if (block_type < INDESTRCTABLE_BLOCK_SPAWN_CHANCE) {
+			else if (BONUS_BLOCK_SPAWN_CHANCE + SPEEDUP_BLOCK_SPAWN_CHANCE <= block_type && block_type < sum_chanse) {
+				//std::cout << "IndBlock" << "\n";
 				block = std::make_shared <IndestructableBlock>
 					(IndestructableBlock(_game, block_size, pos));
 			}
@@ -77,7 +83,7 @@ bool Field::CheckXForNewMoving(float x, float y) {
 		if (block->getPosition().y == y && 
 			(x + block->getSize().x > block->getPosition().x &&
 		 	 x < block->getPosition().x + block->getSize().x ||
-			(x + block->getSize().x > Game::WINDOW_SIZE.x)))
+			(x + block->getSize().x > Game::GetWindowSize().x)))
 				return false;
 		
 	}
@@ -103,10 +109,10 @@ void Field::CheckCollisionsBetweenBlocks() {
 
 			bool collision_block1_left =
 				fabs(block1_left_x - block2_right_x) 
-				<= 0;
+				<= MovingBlock::DEFAULT_BLOCK_SPEED;
 			bool collision_block2_right = 
 				fabs(block1_right_x - block2_left_x)
-				<= 0;
+				<= MovingBlock::DEFAULT_BLOCK_SPEED;
 			bool same_y_pos = (block1_top_y == block2_top_y);
 			
 			if (collision_block1_left && same_y_pos)
@@ -124,7 +130,7 @@ void Field::SpawnMovingBlock() {
 
 	float y_pos = _pos.y + 1.05*(_size.y) *  block_height;
 	do
-		x_pos = (float)(rand() % (int)(Game::WINDOW_SIZE.x - block_width));
+		x_pos = (float)(rand() % (int)(Game::GetWindowSize().x - block_width));
 	while (!CheckXForNewMoving(x_pos, y_pos));
 	auto block = std::make_shared <MovingBlock>
 		(_game, sf::Vector2f(block_width, block_height), sf::Vector2f(x_pos, y_pos));

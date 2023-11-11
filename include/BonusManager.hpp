@@ -13,8 +13,7 @@ public:
 
     std::vector<sf::Texture> _textures;
 
-    void LoadTexture(); 
-
+    void LoadTexture();
 
     void AddRandomBonus(const sf::Vector2f& pos);
 

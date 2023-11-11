@@ -78,4 +78,5 @@ void MovingBlockBonus::Activate(std::shared_ptr<Field> field, std::shared_ptr<Ba
 	std::shared_ptr<Bar> bar) {
 
 	field->SpawnMovingBlock();
+	field->SpawnMovingBlock();
 }
